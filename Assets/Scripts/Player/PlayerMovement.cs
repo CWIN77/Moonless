@@ -6,11 +6,11 @@ public class PlayerMovement : MonoBehaviour
 {
   [SerializeField] private LayerMask jumpableGround;
 
-  private float jumpForce = 3.6f;
+  private float jumpForce = 4f;
   private int attack_cnt = 0;
   private float timeSinceAttack = 0.0f;
-  private enum MovementState { idle, run, jump, fall }
-  private float moveSpeed = 1.8f;
+  private enum MovementState { idle, run, jump, fall, slide }
+  private float moveSpeed = 2.5f;
   // private float attackRange = 0.5f;
 
   private Animator anim;
@@ -32,21 +32,25 @@ public class PlayerMovement : MonoBehaviour
     float dirX = Input.GetAxisRaw("Horizontal");
     timeSinceAttack += Time.deltaTime;
 
-    rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
+    if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Slide"))
+    {
+      rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
+    }
 
     // Jump Input
-    if (Input.GetKeyDown("space") && IsGrounded())
+    if (Input.GetKeyDown("space") && IsGrounded() && !anim.GetCurrentAnimatorStateInfo(0).IsName("Slide"))
     {
       rb.velocity = new Vector2(rb.velocity.x, jumpForce);
     }
+
     // Attack
-    if (Input.GetMouseButtonDown(0) && timeSinceAttack > 0.4f)
+    if (Input.GetMouseButtonDown(0) && timeSinceAttack > 0.3f)
     {
       if (attack_cnt > 1)
       {
         attack_cnt = 0;
       }
-      if (timeSinceAttack > 0.6f)
+      if (timeSinceAttack > 0.5f)
       {
         attack_cnt = 0;
       }
@@ -65,11 +69,11 @@ public class PlayerMovement : MonoBehaviour
       state = MovementState.run;
       if (dirX < 0f)
       {
-        transform.localScale = new Vector3(-1.8F, 1.8F, 1);
+        transform.localScale = new Vector3(-1.9F, 1.9F, 1);
       }
       else
       {
-        transform.localScale = new Vector3(1.8F, 1.8F, 1);
+        transform.localScale = new Vector3(1.9F, 1.9F, 1);
       }
     }
     else if (rb.velocity.y > .1f) // Jump
@@ -83,6 +87,24 @@ public class PlayerMovement : MonoBehaviour
     else // Idle
     {
       state = MovementState.idle;
+    }
+
+    if (Input.GetKeyDown(KeyCode.LeftShift) && IsGrounded())
+    {
+      int isLeft = -1;
+      if (transform.localScale.x > 0)
+      {
+        isLeft = 1;
+      }
+      if (dirX == 0)
+      {
+        rb.velocity = new Vector2(isLeft * moveSpeed * 1.3f, rb.velocity.y);
+      }
+      else
+      {
+        rb.velocity = new Vector2(isLeft * moveSpeed * 1.75f, rb.velocity.y);
+      }
+      state = MovementState.slide;
     }
 
     anim.SetInteger("State", (int)state);

@@ -42,3 +42,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Ground
+    uniqueID: 1208536987
+    locked: 0
+  - name: New Layer 4
+    uniqueID: 642675501
+    locked: 0
+  - name: Enemy
+    uniqueID: 227002613
+    locked: 0
+  - name: Player
+    uniqueID: 3728157065
+    locked: 0
