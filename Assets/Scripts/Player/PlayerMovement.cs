@@ -19,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
   private MovementState state;
 
   // Start is called before the first frame update
-  void Start()
+  private void Start()
   {
     anim = GetComponent<Animator>();
     rb = GetComponent<Rigidbody2D>();
@@ -27,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
   }
 
   // Update is called once per frame
-  void Update()
+  private void Update()
   {
     float dirX = Input.GetAxisRaw("Horizontal");
     timeSinceAttack += Time.deltaTime;
@@ -38,26 +38,27 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Jump Input
-    if (Input.GetKeyDown("space") && IsGrounded() && !anim.GetCurrentAnimatorStateInfo(0).IsName("Slide"))
+    if (Input.GetKeyDown("space") && IsGrounded() && !anim.GetCurrentAnimatorStateInfo(0).IsName("Slide") && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1") && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2"))
     {
       rb.velocity = new Vector2(rb.velocity.x, jumpForce);
     }
 
     // Attack
-    if (Input.GetMouseButtonDown(0) && timeSinceAttack > 0.3f)
+    if (Input.GetMouseButtonDown(0) && timeSinceAttack > 0.4f)
     {
       if (attack_cnt > 1)
       {
         attack_cnt = 0;
       }
-      if (timeSinceAttack > 0.5f)
+      if (timeSinceAttack > 0.6f)
       {
         attack_cnt = 0;
       }
       anim.SetTrigger("Attack" + (attack_cnt + 1));
       attack_cnt++;
-      moveSpeed = 0;
       timeSinceAttack = 0.0f;
+
+      moveSpeed = 0;
     }
     else if (timeSinceAttack > 0.6f)
     {

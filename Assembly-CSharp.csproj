@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Player\PlayerMovement.cs" />
+     <Compile Include="Assets\Scripts\Enemy\Enemy.cs" />
      <Compile Include="Assets\Scripts\Player\PlayerAttack.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.7f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
@@ -707,8 +708,8 @@
     <Reference Include="Unity.Timeline">
         <HintPath>C:\Users\6800U\Desktop\Unity\TopDown2DGame\Moonless_proto2\Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualScripting.Core.Editor">
-        <HintPath>C:\Users\6800U\Desktop\Unity\TopDown2DGame\Moonless_proto2\Library\ScriptAssemblies\Unity.VisualScripting.Core.Editor.dll</HintPath>
+    <Reference Include="Rito.EditorUtilities.SceneAutoSaver">
+        <HintPath>C:\Users\6800U\Desktop\Unity\TopDown2DGame\Moonless_proto2\Library\ScriptAssemblies\Rito.EditorUtilities.SceneAutoSaver.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
         <HintPath>C:\Users\6800U\Desktop\Unity\TopDown2DGame\Moonless_proto2\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
@@ -718,6 +719,9 @@
     </Reference>
     <Reference Include="Unity.Burst.Editor">
         <HintPath>C:\Users\6800U\Desktop\Unity\TopDown2DGame\Moonless_proto2\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Core.Editor">
+        <HintPath>C:\Users\6800U\Desktop\Unity\TopDown2DGame\Moonless_proto2\Library\ScriptAssemblies\Unity.VisualScripting.Core.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.IK.Editor">
         <HintPath>C:\Users\6800U\Desktop\Unity\TopDown2DGame\Moonless_proto2\Library\ScriptAssemblies\Unity.2D.IK.Editor.dll</HintPath>
