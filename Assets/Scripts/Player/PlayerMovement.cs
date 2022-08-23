@@ -10,9 +10,12 @@ public class PlayerMovement : MonoBehaviour
   private sbyte attack_cnt = 0;
   private float timeSinceAttack = 0.0f;
   private enum MovementState { idle, run, jump, fall, slide }
-  private float moveSpeed = 1.8f;
+  private float moveSpeed = 1.9f;
   private sbyte direction = 1;
   private int HP = 100;
+
+  private bool stopMove = false;
+
 
   private Animator anim;
   private Rigidbody2D rb;
@@ -22,8 +25,6 @@ public class PlayerMovement : MonoBehaviour
   // Start is called before the first frame update
   private void Start()
   {
-    float dirX = Input.GetAxisRaw("Horizontal");
-
     anim = GetComponent<Animator>();
     rb = GetComponent<Rigidbody2D>();
     coll = GetComponent<BoxCollider2D>();
@@ -36,17 +37,37 @@ public class PlayerMovement : MonoBehaviour
     timeSinceAttack += Time.deltaTime;
 
     bool isSlide = anim.GetCurrentAnimatorStateInfo(0).IsName("Slide");
-    bool isAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
-    bool isAttack2 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
-    bool isTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
+    bool animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
+    bool animAttack2 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
+    bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
 
-    if (!isAttack1 && !isAttack2 && !isTakeHit)
+    if (!stopMove) { moveSpeed = 1.9f; }
+    else
     {
-      if (Input.GetKeyDown("e"))
-      {
-        TakeDamage(1);
-      }
+      stopMove = false;
+      moveSpeed = 0f;
+    }
 
+    // Attack
+    if (Input.GetMouseButtonDown(0) && timeSinceAttack > 0.4f && !isSlide)
+    {
+      if (attack_cnt > 1 || timeSinceAttack > 0.6f) { attack_cnt = 0; }
+      anim.SetTrigger("Attack" + (attack_cnt + 1));
+      attack_cnt++;
+      timeSinceAttack = 0.0f;
+      moveSpeed = 0f;
+      stopMove = true;
+    }
+
+    if (Input.GetKeyDown("e"))
+    {
+      TakeDamage(1);
+    }
+
+
+
+    if (!animAttack1 && !animAttack2 && !animTakeHit)
+    {
       // -1 = Left, 1 = Right
       if (dirX < 0f && direction != -1)
       {
@@ -66,31 +87,21 @@ public class PlayerMovement : MonoBehaviour
 
       // Jump Input
       if (Input.GetKeyDown("space") && IsGrounded() && !isSlide) { rb.velocity = new Vector2(rb.velocity.x, jumpForce); }
+
+      if (dirX != 0f && IsGrounded()) { state = MovementState.run; } // Run
+      else if (rb.velocity.y > .1f) { state = MovementState.jump; } // Jump   
+      else if (rb.velocity.y < -.1f) { state = MovementState.fall; } // Fall
+      else { state = MovementState.idle; } // Idle
+
+      if (Input.GetKeyDown(KeyCode.LeftShift) && IsGrounded()) // Slide
+      {
+        if (dirX == 0) { rb.velocity = new Vector2(direction * moveSpeed * 1.3f, rb.velocity.y); }
+        else { rb.velocity = new Vector2(direction * moveSpeed * 1.8f, rb.velocity.y); }
+        state = MovementState.slide;
+      }
+
+      anim.SetInteger("State", (int)state);
     }
-
-    // Attack
-    if (Input.GetMouseButtonDown(0) && timeSinceAttack > 0.4f && !isSlide)
-    {
-      if (attack_cnt > 1 || timeSinceAttack > 0.6f) { attack_cnt = 0; }
-      anim.SetTrigger("Attack" + (attack_cnt + 1));
-      attack_cnt++;
-      timeSinceAttack = 0.0f;
-      moveSpeed = 0;
-    }
-
-    if (dirX != 0f && IsGrounded()) { state = MovementState.run; } // Run
-    else if (rb.velocity.y > .1f) { state = MovementState.jump; } // Jump
-    else if (rb.velocity.y < -.1f) { state = MovementState.fall; } // Fall
-    else { state = MovementState.idle; } // Idle
-
-    if (Input.GetKeyDown(KeyCode.LeftShift) && IsGrounded()) // Slide
-    {
-      if (dirX == 0) { rb.velocity = new Vector2(direction * moveSpeed * 1.3f, rb.velocity.y); }
-      else { rb.velocity = new Vector2(direction * moveSpeed * 1.75f, rb.velocity.y); }
-      state = MovementState.slide;
-    }
-
-    anim.SetInteger("State", (int)state);
   }
 
   private bool IsGrounded()
@@ -102,5 +113,7 @@ public class PlayerMovement : MonoBehaviour
   {
     HP -= dmg;
     anim.SetTrigger("TakeHit");
+    moveSpeed = 0;
+    stopMove = true;
   }
 }

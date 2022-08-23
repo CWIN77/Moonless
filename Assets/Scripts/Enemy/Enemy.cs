@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
   private Animator anim;
+
   private int HP = 100;
 
   private void Start()
@@ -24,5 +25,14 @@ public class Enemy : MonoBehaviour
         anim.SetTrigger("Death");
       }
     }
+  }
+
+  public void Attack()
+  {
+    if (HP > 0)
+    {
+      anim.SetTrigger("Attack1");
+    }
+
   }
 }
