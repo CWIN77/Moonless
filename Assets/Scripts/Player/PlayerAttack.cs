@@ -8,7 +8,7 @@ public class PlayerAttack : MonoBehaviour
   {
     if (collision.gameObject.CompareTag("Monster"))
     {
-      collision.gameObject.GetComponent<Enemy>().TakeDamage();
+      collision.gameObject.GetComponent<Enemy>().TakeDamage(20);
     }
   }
 }

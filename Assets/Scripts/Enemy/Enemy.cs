@@ -5,14 +5,24 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
   private Animator anim;
+  private int HP = 100;
 
   private void Start()
   {
     anim = GetComponent<Animator>();
   }
 
-  public void TakeDamage()
+  public void TakeDamage(int dmg)
   {
-    anim.SetTrigger("TakeHit");
+    if (HP > 0)
+    {
+      anim.SetTrigger("TakeHit");
+      HP -= dmg;
+
+      if (HP <= 0)
+      {
+        anim.SetTrigger("Death");
+      }
+    }
   }
 }

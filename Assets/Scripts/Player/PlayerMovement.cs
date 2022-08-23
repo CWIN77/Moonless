@@ -10,9 +10,9 @@ public class PlayerMovement : MonoBehaviour
   private sbyte attack_cnt = 0;
   private float timeSinceAttack = 0.0f;
   private enum MovementState { idle, run, jump, fall, slide }
-  private float moveSpeed = 2.5f;
+  private float moveSpeed = 1.8f;
   private sbyte direction = 1;
-  // private float attackRange = 0.5f;
+  private int HP = 100;
 
   private Animator anim;
   private Rigidbody2D rb;
@@ -38,9 +38,15 @@ public class PlayerMovement : MonoBehaviour
     bool isSlide = anim.GetCurrentAnimatorStateInfo(0).IsName("Slide");
     bool isAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
     bool isAttack2 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
+    bool isTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
 
-    if (!isAttack1 && !isAttack2)
+    if (!isAttack1 && !isAttack2 && !isTakeHit)
     {
+      if (Input.GetKeyDown("e"))
+      {
+        TakeDamage(1);
+      }
+
       // -1 = Left, 1 = Right
       if (dirX < 0f && direction != -1)
       {
@@ -52,31 +58,27 @@ public class PlayerMovement : MonoBehaviour
         transform.position = new Vector3(transform.position.x + 0.2f, transform.position.y, 0);
         direction = 1;
       }
+
       transform.localScale = new Vector3(direction * 1.9F, 1.9F, 1);
-    }
 
-    // Move Input
-    if (!isSlide) { rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y); }
+      // Move Input
+      if (!isSlide) { rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y); }
 
-    // Jump Input
-    if (Input.GetKeyDown("space") && IsGrounded() && !isSlide && !isAttack1 && !isAttack2)
-    {
-      rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+      // Jump Input
+      if (Input.GetKeyDown("space") && IsGrounded() && !isSlide) { rb.velocity = new Vector2(rb.velocity.x, jumpForce); }
     }
 
     // Attack
     if (Input.GetMouseButtonDown(0) && timeSinceAttack > 0.4f && !isSlide)
     {
-      if (attack_cnt > 1 || timeSinceAttack > 0.65f) { attack_cnt = 0; }
+      if (attack_cnt > 1 || timeSinceAttack > 0.6f) { attack_cnt = 0; }
       anim.SetTrigger("Attack" + (attack_cnt + 1));
       attack_cnt++;
       timeSinceAttack = 0.0f;
-
       moveSpeed = 0;
     }
-    else if (timeSinceAttack > 0.6f) { moveSpeed = 1.8f; }
 
-    if (dirX != 0f && moveSpeed > 0 && IsGrounded()) { state = MovementState.run; } // Run
+    if (dirX != 0f && IsGrounded()) { state = MovementState.run; } // Run
     else if (rb.velocity.y > .1f) { state = MovementState.jump; } // Jump
     else if (rb.velocity.y < -.1f) { state = MovementState.fall; } // Fall
     else { state = MovementState.idle; } // Idle
@@ -94,5 +96,11 @@ public class PlayerMovement : MonoBehaviour
   private bool IsGrounded()
   {
     return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, jumpableGround);
+  }
+
+  public void TakeDamage(int dmg)
+  {
+    HP -= dmg;
+    anim.SetTrigger("TakeHit");
   }
 }
