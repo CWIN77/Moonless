@@ -17,10 +17,15 @@ public class Enemy : MonoBehaviour
 
   private void Update()
   {
-    float playerDistance = gameObject.transform.position.x - player.transform.position.x;
-    if (-1.3 < playerDistance || playerDistance > 1.3)
+    float playerDistance = player.transform.position.x - gameObject.transform.position.x;
+    print(playerDistance);
+    if (-1.28 < playerDistance && playerDistance < 1.28)
     {
       Attack();
+
+      if (playerDistance < 0) { transform.localScale = new Vector3(-1.5F, 1.5F, 1); }
+      else if (0 < playerDistance) { transform.localScale = new Vector3(1.5F, 1.5F, 1); }
+
     }
   }
 
