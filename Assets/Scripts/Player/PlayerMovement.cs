@@ -14,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
   private sbyte direction = 1;
   private int HP = 100;
 
+  private float animLength = 0;
+
   private bool stopMove = false;
 
 
@@ -41,11 +43,16 @@ public class PlayerMovement : MonoBehaviour
     bool animAttack2 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
     bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
 
-    if (!stopMove) { moveSpeed = 1.9f; }
+    if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < animLength && animLength > 0)
+    {
+      rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+    }
     else
     {
-      stopMove = false;
-      moveSpeed = 0f;
+      rb.constraints &= ~RigidbodyConstraints2D.FreezeAll;
+      rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+      animLength = 0;
     }
 
     // Attack
@@ -55,19 +62,16 @@ public class PlayerMovement : MonoBehaviour
       anim.SetTrigger("Attack" + (attack_cnt + 1));
       attack_cnt++;
       timeSinceAttack = 0.0f;
-      moveSpeed = 0f;
-      stopMove = true;
+      animLength = GetAnimLength("Attack" + (attack_cnt + 1));
     }
-
-    if (Input.GetKeyDown("e"))
-    {
-      TakeDamage(1);
-    }
-
-
 
     if (!animAttack1 && !animAttack2 && !animTakeHit)
     {
+      // if (Input.GetKeyDown("e"))
+      // {
+      //   TakeDamage(1);
+      // }
+
       // -1 = Left, 1 = Right
       if (dirX < 0f && direction != -1)
       {
@@ -93,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
       else if (rb.velocity.y < -.1f) { state = MovementState.fall; } // Fall
       else { state = MovementState.idle; } // Idle
 
-      if (Input.GetKeyDown(KeyCode.LeftShift) && IsGrounded()) // Slide
+      if (Input.GetKeyDown(KeyCode.LeftShift) && IsGrounded() && !animTakeHit) // Slide
       {
         if (dirX == 0) { rb.velocity = new Vector2(direction * moveSpeed * 1.3f, rb.velocity.y); }
         else { rb.velocity = new Vector2(direction * moveSpeed * 1.8f, rb.velocity.y); }
@@ -113,7 +117,23 @@ public class PlayerMovement : MonoBehaviour
   {
     HP -= dmg;
     anim.SetTrigger("TakeHit");
-    moveSpeed = 0;
-    stopMove = true;
+    animLength = GetAnimLength("TakeHit");
   }
+
+  private float GetAnimLength(string animName)
+  {
+    float time = 0;
+    rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+
+    RuntimeAnimatorController ac = anim.runtimeAnimatorController;
+    for (int i = 0; i < ac.animationClips.Length; i++)
+    {
+      if (ac.animationClips[i].name == animName)
+      {
+        time = ac.animationClips[i].length;
+      }
+    }
+    return time;
+  }
+
 }
