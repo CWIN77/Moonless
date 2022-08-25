@@ -13,11 +13,7 @@ public class PlayerMovement : MonoBehaviour
   private float moveSpeed = 1.9f;
   private sbyte direction = 1;
   private int HP = 100;
-
   private float animLength = 0;
-
-  private bool stopMove = false;
-
 
   private Animator anim;
   private Rigidbody2D rb;
