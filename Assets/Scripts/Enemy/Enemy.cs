@@ -8,8 +8,7 @@ public class Enemy : MonoBehaviour
   private Rigidbody2D rb;
   private GameObject player;
 
-  private float attackRange = 1.25f;
-  private bool isScanPlayer = false;
+  private float attackRange = 1.1f;
   private float playerDistance;
   private float moveSpeed = 0.8f;
   private sbyte direction = 1;
@@ -18,6 +17,8 @@ public class Enemy : MonoBehaviour
   private float animLength = 0;
   private float startPosX;
   private bool findPlayer = false;
+  private bool waitAttack = false;
+  private float waitTime = 0;
 
   private int HP = 100;
 
@@ -33,6 +34,7 @@ public class Enemy : MonoBehaviour
   {
     bool animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
     bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
+    bool animWait = anim.GetCurrentAnimatorStateInfo(0).IsName("Wait");
 
     playerDistance = player.transform.position.x - gameObject.transform.position.x;
 
@@ -51,40 +53,45 @@ public class Enemy : MonoBehaviour
       animLength = 0;
     }
 
+    if (anim.GetInteger("Wait") > 0 && waitTime > 0.2)
+    {
+      waitTime = 0;
+      anim.SetInteger("Wait", anim.GetInteger("Wait") - 1);
+    }
+    else if (anim.GetInteger("Wait") > 0)
+    {
+      waitTime += Time.deltaTime;
+    }
+
     if (Mathf.Abs(playerDistance) < attackRange)
     {
       Attack();
     }
 
-    // if (2.6 > Mathf.Abs(playerDistance))
-    // {
-    //   findPlayer = true;
-    // }
-
-    // if (3 < Mathf.Abs(startPosX - transform.position.x))
-    // {
-    //   findPlayer = false;
-    //   transform.position = new Vector3(startPosX, transform.position.y, transform.position.z);
-    // }
-
-    if (!animAttack1 && !animTakeHit && (2.6 > Mathf.Abs(playerDistance) || findPlayer))
+    if (HP > 0)
     {
-      findPlayer = true;
-      transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
-      rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
-      state = MovementState.walk;
-    }
-    else
-    {
-      state = MovementState.idle;
-    }
+      if (!animAttack1 && !animTakeHit && !animWait && (2.6 > Mathf.Abs(playerDistance) || findPlayer))
+      {
+        findPlayer = true;
+        transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
+        rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
+        state = MovementState.walk;
+      }
+      else
+      {
+        state = MovementState.idle;
+      }
 
-    anim.SetInteger("State", (int)state);
+      anim.SetInteger("State", (int)state);
+
+    }
   }
 
   public void TakeDamage(int dmg)
   {
-    if (HP > 0)
+    bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
+
+    if (HP > 0 && !animTakeHit)
     {
       anim.SetTrigger("TakeHit");
       HP -= dmg;
@@ -92,7 +99,6 @@ public class Enemy : MonoBehaviour
 
       if (HP <= 0)
       {
-        // anim.SetTrigger("Death");
         anim.SetInteger("State", 2);
       }
     }
@@ -102,26 +108,17 @@ public class Enemy : MonoBehaviour
   {
     bool animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
     bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
+    bool animWait = anim.GetCurrentAnimatorStateInfo(0).IsName("Wait");
 
-    if (HP > 0 && !animAttack1 && !animTakeHit)
+    if (HP > 0 && !animAttack1 && !animTakeHit && !animWait)
     {
       transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
       anim.SetTrigger("Attack1");
+
+      anim.SetInteger("Wait", Random.Range(1, 11));  // 1 ~ 10
       animLength = GetAnimLength("Attack1");
     }
   }
-
-  // private void FollowPlayer(bool isFollow)
-  // {
-  //   if (isFollow)
-  //   {
-  //     transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
-
-  //     rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
-  //     anim.SetInteger("State", 1);
-
-  //   }
-  // }
 
   private float GetAnimLength(string animName)
   {

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-  private void OnTriggerEnter2D(Collider2D collision)
+  private void OnTriggerEnter2D(Collider2D coll)
   {
-    if (collision.gameObject.CompareTag("Monster"))
+    if (coll.gameObject.CompareTag("Monster"))
     {
-      collision.gameObject.GetComponent<Enemy>().TakeDamage(20);
+      coll.gameObject.GetComponent<Enemy>().TakeDamage(20);
     }
   }
 }

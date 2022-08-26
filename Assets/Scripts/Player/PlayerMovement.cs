@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
   private sbyte direction = 1;
   private int HP = 100;
   private float animLength = 0;
+  private float animNowTime = 0;
 
   private Animator anim;
   private Rigidbody2D rb;
@@ -33,13 +34,14 @@ public class PlayerMovement : MonoBehaviour
   {
     float dirX = Input.GetAxisRaw("Horizontal");
     timeSinceAttack += Time.deltaTime;
+    animNowTime += Time.deltaTime;
 
     bool isSlide = anim.GetCurrentAnimatorStateInfo(0).IsName("Slide");
     bool animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
     bool animAttack2 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
     bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
 
-    if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < animLength && animLength > 0)
+    if (animLength > 0 && animNowTime < animLength)
     {
       rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
     }
@@ -47,7 +49,6 @@ public class PlayerMovement : MonoBehaviour
     {
       rb.constraints &= ~RigidbodyConstraints2D.FreezeAll;
       rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-
       animLength = 0;
     }
 
@@ -111,16 +112,19 @@ public class PlayerMovement : MonoBehaviour
 
   public void TakeDamage(int dmg)
   {
-    HP -= dmg;
-    anim.SetTrigger("TakeHit");
-    animLength = GetAnimLength("TakeHit");
+    bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
+    if (HP > 0 && !animTakeHit)
+    {
+      HP -= dmg;
+      anim.SetTrigger("TakeHit");
+      animLength = GetAnimLength("TakeHit");
+    }
   }
 
   private float GetAnimLength(string animName)
   {
     float time = 0;
     rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
-
     RuntimeAnimatorController ac = anim.runtimeAnimatorController;
     for (int i = 0; i < ac.animationClips.Length; i++)
     {
@@ -129,6 +133,7 @@ public class PlayerMovement : MonoBehaviour
         time = ac.animationClips[i].length;
       }
     }
+    animNowTime = 0;
     return time;
   }
 
