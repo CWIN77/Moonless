@@ -59,9 +59,9 @@ public class Player : MonoBehaviour
     if (HP > 0)
     {
       // Attack
-      if (Input.GetMouseButtonDown(0) && attackWaitTime > 0.4f && !isSlide)
+      if (Input.GetMouseButtonDown(0) && attackWaitTime > 0.56f && !isSlide)
       {
-        if (attack_cnt > 1 || attackWaitTime > 0.6f) { attack_cnt = 0; }
+        if (attack_cnt > 1 || attackWaitTime > 0.72f) { attack_cnt = 0; }
         anim.SetTrigger("Attack" + (attack_cnt + 1));
         attack_cnt++;
         attackWaitTime = 0.0f;
@@ -117,6 +117,7 @@ public class Player : MonoBehaviour
     bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
     if (HP > 0 && !animTakeHit)
     {
+      attack_cnt = 0;
       stopLength = GetAnimLength("TakeHit");
       HP -= dmg;
       HPText.text = HP + " / 100";

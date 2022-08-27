@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
   private Animator anim;
   private Rigidbody2D rb;
   private GameObject player;
+  private SpriteRenderer sr;
 
   private sbyte direction = 1;
   private float stopLength = 0;
@@ -15,6 +16,7 @@ public class Enemy : MonoBehaviour
   private bool animAttack1 = false;
   private bool animTakeHit = false;
   private bool animWait = false;
+  private bool isAction = false;
 
   private int HP = 100;
 
@@ -23,17 +25,17 @@ public class Enemy : MonoBehaviour
     anim = GetComponent<Animator>();
     rb = GetComponent<Rigidbody2D>();
     player = GameObject.FindGameObjectWithTag("Player");
+    sr = GetComponent<SpriteRenderer>();
   }
 
   private void Update()
   {
-    // ActiveBehaviour = Attack1 | TakeHit | Wait
 
+    // ActiveBehaviour = Attack1 | TakeHit | Wait
     StopActiveBehaviour();
     PlayBehaviour();
 
     //TODO: 주위를 두리번 거리는 행동 만들기
-    //TODO: 기다리는 중에 플레이어가 벗어나면 기다리지 말고 따라가기
   }
 
   public void PlayBehaviour()
@@ -86,6 +88,7 @@ public class Enemy : MonoBehaviour
     animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
     if (HP > 0 && !animTakeHit)
     {
+      isAction = animAttack1 || animWait;
       anim.SetTrigger("TakeHit");
       HP -= dmg;
       stopLength = GetAnimLength("TakeHit");
@@ -101,7 +104,14 @@ public class Enemy : MonoBehaviour
   {
     transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
     anim.SetTrigger("Attack1");
-    anim.SetInteger("Wait", Random.Range(1, 9));  // 1 ~ 8
+    if (!isAction)
+    {
+      anim.SetInteger("Wait", Random.Range(1, 10));  // 1 ~ 9
+    }
+    else
+    {
+      isAction = false;
+    }
     stopLength = GetAnimLength("Attack1");
   }
 
@@ -123,6 +133,7 @@ public class Enemy : MonoBehaviour
     else if (animWait)
     {
       anim.SetTrigger("StopWait");
+      anim.SetInteger("Wait", 0);
     }
   }
 
