@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
   private Rigidbody2D rb;
   private GameObject player;
 
-  private float attackRange = 1.1f;
+  private float attackRange = 1f;
   private float playerDistance;
   private float moveSpeed = 0.8f;
   private sbyte direction = 1;
@@ -70,7 +70,7 @@ public class Enemy : MonoBehaviour
 
     if (HP > 0)
     {
-      if (!animAttack1 && !animTakeHit && !animWait && (2.6 > Mathf.Abs(playerDistance) || findPlayer))
+      if (!animAttack1 && !animTakeHit && !animWait && (2.5 > Mathf.Abs(playerDistance) || findPlayer))
       {
         findPlayer = true;
         transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
@@ -115,7 +115,7 @@ public class Enemy : MonoBehaviour
       transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
       anim.SetTrigger("Attack1");
 
-      anim.SetInteger("Wait", Random.Range(1, 11));  // 1 ~ 10
+      anim.SetInteger("Wait", Random.Range(0, 9));  // 0 ~ 8
       animLength = GetAnimLength("Attack1");
     }
   }
