@@ -8,17 +8,13 @@ public class Enemy : MonoBehaviour
   private Rigidbody2D rb;
   private GameObject player;
 
-  private float attackRange = 1f;
-  private float playerDistance;
-  private float moveSpeed = 0.8f;
   private sbyte direction = 1;
-  private enum MovementState { idle, walk, death }
-  private MovementState state;
-  private float animLength = 0;
-  private float startPosX;
+  private float stopLength = 0;
   private bool findPlayer = false;
-  private bool waitAttack = false;
   private float waitTime = 0;
+  private bool animAttack1 = false;
+  private bool animTakeHit = false;
+  private bool animWait = false;
 
   private int HP = 100;
 
@@ -27,21 +23,37 @@ public class Enemy : MonoBehaviour
     anim = GetComponent<Animator>();
     rb = GetComponent<Rigidbody2D>();
     player = GameObject.FindGameObjectWithTag("Player");
-    startPosX = transform.localPosition.x;
   }
 
   private void Update()
   {
-    bool animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
-    bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
-    bool animWait = anim.GetCurrentAnimatorStateInfo(0).IsName("Wait");
+    // ActiveBehaviour = Attack1 | TakeHit | Wait
 
-    playerDistance = player.transform.position.x - gameObject.transform.position.x;
+    StopActiveBehaviour();
+    PlayBehaviour();
 
-    if (playerDistance < 0) { direction = -1; } // Left
-    else if (0 < playerDistance) { direction = 1; } // Right
+    //TODO: 주위를 두리번 거리는 행동 만들기
+    //TODO: 기다리는 중에 플레이어가 벗어나면 기다리지 말고 따라가기
+  }
 
-    if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < animLength && animLength > 0)
+  public void PlayBehaviour()
+  {
+    WaitAttack();
+
+    if (HP > 0 && IsPlayActiveBehavior())
+    {
+      float playerDistance = player.transform.position.x - gameObject.transform.position.x;
+      direction = (sbyte)((playerDistance < 0) ? -1 : 1); // -1 : Left // 1 : Right
+
+      if (Mathf.Abs(playerDistance) < 1.12) { Attack(); } // 플레이어가 범위내 있을때 공격
+      else if (2.5f > Mathf.Abs(playerDistance) || findPlayer) { GoToPlayer(); } // 플레이어가 범위내 있을때 걸어가기
+      else { anim.SetInteger("State", 0); } // Idle
+    }
+  }
+
+  public void StopActiveBehaviour()
+  {
+    if (stopLength > 0 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime < stopLength)
     {
       rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
     }
@@ -49,82 +61,74 @@ public class Enemy : MonoBehaviour
     {
       rb.constraints &= ~RigidbodyConstraints2D.FreezeAll;
       rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-
-      animLength = 0;
+      stopLength = 0;
     }
+  }
 
-    if (anim.GetInteger("Wait") > 0 && waitTime > 0.2)
-    {
-      waitTime = 0;
-      anim.SetInteger("Wait", anim.GetInteger("Wait") - 1);
-    }
-    else if (anim.GetInteger("Wait") > 0)
-    {
-      waitTime += Time.deltaTime;
-    }
+  public void GoToPlayer()
+  {
+    findPlayer = true;
+    transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
+    rb.velocity = new Vector2(direction * 0.8f, rb.velocity.y);
+    anim.SetInteger("State", 1);
+  }
 
-    if (Mathf.Abs(playerDistance) < attackRange)
-    {
-      Attack();
-    }
-
-    if (HP > 0)
-    {
-      if (!animAttack1 && !animTakeHit && !animWait && (2.5 > Mathf.Abs(playerDistance) || findPlayer))
-      {
-        findPlayer = true;
-        transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
-        rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
-        state = MovementState.walk;
-      }
-      else
-      {
-        state = MovementState.idle;
-      }
-
-      anim.SetInteger("State", (int)state);
-
-    }
+  public bool IsPlayActiveBehavior()
+  {
+    animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
+    animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
+    animWait = anim.GetCurrentAnimatorStateInfo(0).IsName("Wait");
+    return (!animTakeHit && !animAttack1 && !animWait);
   }
 
   public void TakeDamage(int dmg)
   {
-    bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
-
+    animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
     if (HP > 0 && !animTakeHit)
     {
       anim.SetTrigger("TakeHit");
       HP -= dmg;
-      animLength = GetAnimLength("TakeHit");
+      stopLength = GetAnimLength("TakeHit");
+    }
 
-      if (HP <= 0)
-      {
-        anim.SetInteger("State", 2);
-      }
+    if (HP <= 0) // Death
+    {
+      anim.SetInteger("State", 2);
     }
   }
 
   public void Attack()
   {
-    bool animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
-    bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
-    bool animWait = anim.GetCurrentAnimatorStateInfo(0).IsName("Wait");
+    transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
+    anim.SetTrigger("Attack1");
+    anim.SetInteger("Wait", Random.Range(1, 9));  // 1 ~ 8
+    stopLength = GetAnimLength("Attack1");
+  }
 
-    if (HP > 0 && !animAttack1 && !animTakeHit && !animWait)
+  public void WaitAttack()
+  {
+    float playerDistance = player.transform.position.x - gameObject.transform.position.x;
+    if (Mathf.Abs(playerDistance) < 1.2) // 플레이어가 일정 범위를 넘어가면 멈춤
     {
-      transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
-      anim.SetTrigger("Attack1");
-
-      anim.SetInteger("Wait", Random.Range(0, 9));  // 0 ~ 8
-      animLength = GetAnimLength("Attack1");
+      if (anim.GetInteger("Wait") > 0 && waitTime > 0.2)
+      {
+        waitTime = 0;
+        anim.SetInteger("Wait", anim.GetInteger("Wait") - 1);
+      }
+      else if (anim.GetInteger("Wait") > 0)
+      {
+        waitTime += Time.deltaTime;
+      }
+    }
+    else if (animWait)
+    {
+      anim.SetTrigger("StopWait");
     }
   }
 
   private float GetAnimLength(string animName)
   {
     float time = 0;
-    // rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
-
     RuntimeAnimatorController ac = anim.runtimeAnimatorController;
     for (int i = 0; i < ac.animationClips.Length; i++)
     {
