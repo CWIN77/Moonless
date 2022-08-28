@@ -7,16 +7,18 @@ public class Enemy : MonoBehaviour
   private Animator anim;
   private Rigidbody2D rb;
   private GameObject player;
-  private SpriteRenderer sr;
 
   private sbyte direction = 1;
   private float stopLength = 0;
   private bool findPlayer = false;
-  private float waitTime = 0;
+  private float waitAttackTime = 0;
+  private float walkAroundTime = 0;
   private bool animAttack1 = false;
   private bool animTakeHit = false;
   private bool animWait = false;
   private bool isAction = false;
+  private bool isWalkAround = false;
+  private sbyte randDirection = 0;
 
   private int HP = 100;
 
@@ -25,17 +27,13 @@ public class Enemy : MonoBehaviour
     anim = GetComponent<Animator>();
     rb = GetComponent<Rigidbody2D>();
     player = GameObject.FindGameObjectWithTag("Player");
-    sr = GetComponent<SpriteRenderer>();
   }
 
   private void Update()
   {
-
     // ActiveBehaviour = Attack1 | TakeHit | Wait
     StopActiveBehaviour();
     PlayBehaviour();
-
-    //TODO: 주위를 두리번 거리는 행동 만들기
   }
 
   public void PlayBehaviour()
@@ -49,8 +47,30 @@ public class Enemy : MonoBehaviour
 
       if (Mathf.Abs(playerDistance) < 1.12) { Attack(); } // 플레이어가 범위내 있을때 공격
       else if (2.5f > Mathf.Abs(playerDistance) || findPlayer) { GoToPlayer(); } // 플레이어가 범위내 있을때 걸어가기
-      else { anim.SetInteger("State", 0); } // Idle
+      else { WalkAround(); } // Idle
     }
+  }
+
+  public void WalkAround()
+  {
+    if (walkAroundTime > 1.5)
+    {
+      walkAroundTime = 0;
+      randDirection = (sbyte)Random.Range(-1, 4);
+    }
+    else if (randDirection == 1 || randDirection == -1)
+    {
+      transform.localScale = new Vector3(randDirection * transform.localScale.y, transform.localScale.y, transform.localScale.z);
+      rb.velocity = new Vector2(randDirection * 0.4f, rb.velocity.y);
+      anim.SetInteger("State", 1);
+    }
+    else
+    {
+      anim.SetInteger("State", 0);
+      rb.velocity = new Vector2(0 * 0.4f, rb.velocity.y);
+    }
+
+    walkAroundTime += Time.deltaTime;
   }
 
   public void StopActiveBehaviour()
@@ -59,7 +79,7 @@ public class Enemy : MonoBehaviour
     {
       rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
     }
-    else
+    else if (rb.constraints.ToString() == "FreezePositionX, FreezeRotation")
     {
       rb.constraints &= ~RigidbodyConstraints2D.FreezeAll;
       rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -120,20 +140,19 @@ public class Enemy : MonoBehaviour
     float playerDistance = player.transform.position.x - gameObject.transform.position.x;
     if (Mathf.Abs(playerDistance) < 1.2) // 플레이어가 일정 범위를 넘어가면 멈춤
     {
-      if (anim.GetInteger("Wait") > 0 && waitTime > 0.2)
+      if (anim.GetInteger("Wait") > 0 && waitAttackTime > 0.2)
       {
-        waitTime = 0;
+        waitAttackTime = 0;
         anim.SetInteger("Wait", anim.GetInteger("Wait") - 1);
       }
       else if (anim.GetInteger("Wait") > 0)
       {
-        waitTime += Time.deltaTime;
+        waitAttackTime += Time.deltaTime;
       }
     }
     else if (animWait)
     {
       anim.SetTrigger("StopWait");
-      anim.SetInteger("Wait", 0);
     }
   }
 

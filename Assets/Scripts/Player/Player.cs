@@ -8,6 +8,12 @@ public class Player : MonoBehaviour
   [SerializeField] private LayerMask jumpableGround;
   [SerializeField] private Text HPText;
 
+  private Animator anim;
+  private Rigidbody2D rb;
+  private BoxCollider2D coll;
+  private MovementState state;
+  private SpriteRenderer sr;
+
   private float jumpForce = 4f;
   private sbyte attack_cnt = 0;
   private float attackWaitTime = 0.0f;
@@ -18,17 +24,13 @@ public class Player : MonoBehaviour
   private float stopLength = 0;
   private float animNowTime = 0;
 
-  private Animator anim;
-  private Rigidbody2D rb;
-  private BoxCollider2D coll;
-  private MovementState state;
-
   // Start is called before the first frame update
   private void Start()
   {
     anim = GetComponent<Animator>();
     rb = GetComponent<Rigidbody2D>();
     coll = GetComponent<BoxCollider2D>();
+    sr = GetComponent<SpriteRenderer>();
 
     HPText.text = HP + " / 100";
   }
@@ -45,27 +47,28 @@ public class Player : MonoBehaviour
     bool animAttack2 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
     bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
 
-    if (stopLength > 0 && animNowTime < stopLength)
+    if (stopLength > 0 && animNowTime <= stopLength)
     {
       rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
     }
-    else
+    else if (rb.constraints.ToString() == "FreezePositionX, FreezeRotation")
     {
       rb.constraints &= ~RigidbodyConstraints2D.FreezeAll;
       rb.constraints = RigidbodyConstraints2D.FreezeRotation;
       stopLength = 0;
+      // sr =
     }
 
     if (HP > 0)
     {
       // Attack
-      if (Input.GetMouseButtonDown(0) && attackWaitTime > 0.56f && !isSlide)
+      if (Input.GetMouseButtonDown(0) && attackWaitTime > 0.425f && !isSlide)
       {
-        if (attack_cnt > 1 || attackWaitTime > 0.72f) { attack_cnt = 0; }
+        if (attack_cnt > 1 || attackWaitTime > 0.6f) { attack_cnt = 0; }
         anim.SetTrigger("Attack" + (attack_cnt + 1));
         attack_cnt++;
         attackWaitTime = 0.0f;
-        stopLength = GetAnimLength("Attack" + (attack_cnt + 1));
+        stopLength = GetAnimLength("Attack" + attack_cnt);
       }
 
       if (!animAttack1 && !animAttack2 && !animTakeHit)
@@ -147,5 +150,4 @@ public class Player : MonoBehaviour
     animNowTime = 0;
     return time;
   }
-
 }
