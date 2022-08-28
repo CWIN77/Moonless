@@ -6686,7 +6686,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &2020327569
 BoxCollider2D:
@@ -7281,6 +7281,10 @@ PrefabInstance:
       propertyPath: m_Offset.y
       value: 0.0056856126
       objectReference: {fileID: 0}
+    - target: {fileID: 1683409109563271549, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
+      propertyPath: prefab_obj
+      value: 
+      objectReference: {fileID: 4283063433743557146, guid: b54da1a898ecf3542ac2ac86aa490802, type: 3}
     - target: {fileID: 1683409109773244228, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -7311,7 +7315,7 @@ PrefabInstance:
       objectReference: {fileID: 1565124188}
     - target: {fileID: 1683409109773244231, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1683409109773244231, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
       propertyPath: m_LocalScale.x
@@ -7409,6 +7413,10 @@ PrefabInstance:
       propertyPath: m_Offset.y
       value: 0.0025867075
       objectReference: {fileID: 0}
+    - target: {fileID: 1683409111569748811, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
+      propertyPath: prefab_obj
+      value: 
+      objectReference: {fileID: 4283063433743557146, guid: b54da1a898ecf3542ac2ac86aa490802, type: 3}
     - target: {fileID: 1683409111569748814, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
       propertyPath: m_Name
       value: HitBox_Attack1

@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
       // Attack
       if (Input.GetMouseButtonDown(0) && attackWaitTime > 0.425f && !isSlide)
       {
-        if (attack_cnt > 1 || attackWaitTime > 0.6f) { attack_cnt = 0; }
+        if (attack_cnt > 1 || attackWaitTime > 0.63f) { attack_cnt = 0; }
         anim.SetTrigger("Attack" + (attack_cnt + 1));
         attack_cnt++;
         attackWaitTime = 0.0f;
