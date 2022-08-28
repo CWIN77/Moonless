@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+  [SerializeField] private GameObject sliceEffect;
+
   private Animator anim;
   private Rigidbody2D rb;
   private GameObject player;
@@ -17,7 +19,6 @@ public class Enemy : MonoBehaviour
   private bool animTakeHit = false;
   private bool animWait = false;
   private bool isAction = false;
-  private bool isWalkAround = false;
   private sbyte randDirection = 0;
 
   private int HP = 100;
@@ -168,5 +169,18 @@ public class Enemy : MonoBehaviour
       }
     }
     return time;
+  }
+
+  private void OnTriggerEnter2D(Collider2D coll)
+  {
+    if (coll.gameObject.CompareTag("PlayerAttackBox") && HP > 0)
+    {
+      TakeDamage(10);
+
+      GameObject obj = MonoBehaviour.Instantiate(sliceEffect);
+      obj.name = "SliceEffect";
+      obj.transform.position = new Vector3(gameObject.transform.position.x + 0.06f, gameObject.transform.position.y, 0);
+      obj.transform.eulerAngles = new Vector3(0, 0, Random.Range(0, 360));
+    }
   }
 }

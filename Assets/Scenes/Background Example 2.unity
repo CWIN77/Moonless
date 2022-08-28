@@ -7259,7 +7259,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1683409109563271536, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
       propertyPath: m_Name
-      value: HitBox_Attack2
+      value: PlayerAttackBox_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1683409109563271536, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
+      propertyPath: m_TagString
+      value: PlayerAttackBox
       objectReference: {fileID: 0}
     - target: {fileID: 1683409109563271538, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
       propertyPath: m_Size.x
@@ -7419,9 +7423,15 @@ PrefabInstance:
       objectReference: {fileID: 4283063433743557146, guid: b54da1a898ecf3542ac2ac86aa490802, type: 3}
     - target: {fileID: 1683409111569748814, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
       propertyPath: m_Name
-      value: HitBox_Attack1
+      value: PlayerAttackBox_1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 1683409111569748814, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
+      propertyPath: m_TagString
+      value: PlayerAttackBox
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 1683409111569748811, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
+    - {fileID: 1683409109563271549, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
 --- !u!1001 &8957875087741003079
 PrefabInstance:
@@ -7462,6 +7472,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 8957875087200068628, guid: 008eef669bd43754481d21cc4ca65f3c, type: 3}
+      propertyPath: sliceEffect
+      value: 
+      objectReference: {fileID: 4283063433743557146, guid: b54da1a898ecf3542ac2ac86aa490802, type: 3}
     - target: {fileID: 8957875087200068629, guid: 008eef669bd43754481d21cc4ca65f3c, type: 3}
       propertyPath: m_Name
       value: Skeleton
@@ -7510,5 +7524,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8957875087621407560, guid: 008eef669bd43754481d21cc4ca65f3c, type: 3}
+      propertyPath: m_Name
+      value: EnemyAttackBox
+      objectReference: {fileID: 0}
+    - target: {fileID: 8957875087621407560, guid: 008eef669bd43754481d21cc4ca65f3c, type: 3}
+      propertyPath: m_TagString
+      value: EnemyAttackBox
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 8957875087621407573, guid: 008eef669bd43754481d21cc4ca65f3c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 008eef669bd43754481d21cc4ca65f3c, type: 3}

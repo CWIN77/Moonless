@@ -115,7 +115,7 @@ public class Player : MonoBehaviour
     return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, jumpableGround);
   }
 
-  public void TakeDamage(int dmg)
+  private void TakeDamage(int dmg)
   {
     bool animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
     if (HP > 0 && !animTakeHit)
@@ -149,5 +149,13 @@ public class Player : MonoBehaviour
     }
     animNowTime = 0;
     return time;
+  }
+
+  private void OnTriggerEnter2D(Collider2D coll)
+  {
+    if (coll.gameObject.CompareTag("EnemyAttackBox") && HP > 0)
+    {
+      TakeDamage(10);
+    }
   }
 }
