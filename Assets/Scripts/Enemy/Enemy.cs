@@ -36,7 +36,7 @@ public class Enemy : MonoBehaviour
     PlayBehaviour();
   }
 
-  public void PlayBehaviour()
+  private void PlayBehaviour()
   {
     WaitAttack();
 
@@ -51,7 +51,7 @@ public class Enemy : MonoBehaviour
     }
   }
 
-  public void WalkAround()
+  private void WalkAround()
   {
     if (walkAroundTime > 1.5)
     {
@@ -73,7 +73,7 @@ public class Enemy : MonoBehaviour
     walkAroundTime += Time.deltaTime;
   }
 
-  public void StopActiveBehaviour()
+  private void StopActiveBehaviour()
   {
     if (stopLength > 0 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime < stopLength)
     {
@@ -87,7 +87,7 @@ public class Enemy : MonoBehaviour
     }
   }
 
-  public void GoToPlayer()
+  private void GoToPlayer()
   {
     findPlayer = true;
     transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
@@ -95,7 +95,7 @@ public class Enemy : MonoBehaviour
     anim.SetInteger("State", 1);
   }
 
-  public bool IsPlayActiveBehavior()
+  private bool IsPlayActiveBehavior()
   {
     animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
     animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
@@ -120,7 +120,7 @@ public class Enemy : MonoBehaviour
     }
   }
 
-  public void Attack()
+  private void Attack()
   {
     transform.localScale = new Vector3(direction * transform.localScale.y, transform.localScale.y, transform.localScale.z);
     anim.SetTrigger("Attack1");
@@ -135,7 +135,7 @@ public class Enemy : MonoBehaviour
     stopLength = GetAnimLength("Attack1");
   }
 
-  public void WaitAttack()
+  private void WaitAttack()
   {
     float playerDistance = player.transform.position.x - gameObject.transform.position.x;
     if (Mathf.Abs(playerDistance) < 1.2) // 플레이어가 일정 범위를 넘어가면 멈춤
