@@ -24,7 +24,8 @@ public class Player : MonoBehaviour
   private float stopLength = 0;
   private float animNowTime = 0;
 
-  // Start is called before the first frame update
+  //TODO: 화면 흔들림 구현
+
   private void Start()
   {
     anim = GetComponent<Animator>();
@@ -56,7 +57,6 @@ public class Player : MonoBehaviour
       rb.constraints &= ~RigidbodyConstraints2D.FreezeAll;
       rb.constraints = RigidbodyConstraints2D.FreezeRotation;
       stopLength = 0;
-      // sr =
     }
 
     if (HP > 0)
@@ -155,7 +155,7 @@ public class Player : MonoBehaviour
   {
     if (coll.gameObject.CompareTag("EnemyAttackBox") && HP > 0)
     {
-      TakeDamage(10);
+      TakeDamage(5);
     }
   }
 }

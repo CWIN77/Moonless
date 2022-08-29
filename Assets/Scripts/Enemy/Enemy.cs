@@ -19,6 +19,7 @@ public class Enemy : MonoBehaviour
   private bool animTakeHit = false;
   private bool animWait = false;
   private bool isAction = false;
+  private bool isTakeDamage = false;
   private sbyte randDirection = 0;
 
   private int HP = 100;
@@ -84,6 +85,7 @@ public class Enemy : MonoBehaviour
     {
       rb.constraints &= ~RigidbodyConstraints2D.FreezeAll;
       rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+      isTakeDamage = false;
       stopLength = 0;
     }
   }
@@ -173,13 +175,14 @@ public class Enemy : MonoBehaviour
 
   private void OnTriggerEnter2D(Collider2D coll)
   {
-    if (coll.gameObject.CompareTag("PlayerAttackBox") && HP > 0)
+    if (coll.gameObject.CompareTag("PlayerAttackBox") && HP > 0 && !isTakeDamage)
     {
       TakeDamage(10);
+      isTakeDamage = true;
 
       GameObject obj = MonoBehaviour.Instantiate(sliceEffect);
       obj.name = "SliceEffect";
-      obj.transform.position = new Vector3(gameObject.transform.position.x + 0.06f, gameObject.transform.position.y, 0);
+      obj.transform.position = new Vector3(gameObject.transform.position.x + 0.06f, gameObject.transform.position.y + 0.06f, 0);
       obj.transform.eulerAngles = new Vector3(0, 0, Random.Range(0, 360));
     }
   }
