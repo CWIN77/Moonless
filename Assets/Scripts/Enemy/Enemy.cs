@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
   [SerializeField] private GameObject sliceEffect;
+  [SerializeField] private Camera mainCamera;
 
   private Animator anim;
   private Rigidbody2D rb;
@@ -179,6 +180,8 @@ public class Enemy : MonoBehaviour
     {
       TakeDamage(10);
       isTakeDamage = true;
+
+      StartCoroutine(mainCamera.GetComponent<CameraManager>().Shake(0.1f, 7f, 0.3f));
 
       GameObject obj = MonoBehaviour.Instantiate(sliceEffect);
       obj.name = "SliceEffect";

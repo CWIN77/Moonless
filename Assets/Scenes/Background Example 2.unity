@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 38757213}
   - component: {fileID: 38757212}
   - component: {fileID: 38757211}
+  - component: {fileID: 38757214}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: Untagged
@@ -207,6 +208,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &38757214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38757210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2024652cee212d4478c6c40dfa2aa8a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &49539013
 GameObject:
   m_ObjectHideFlags: 0
@@ -7333,6 +7346,10 @@ PrefabInstance:
       propertyPath: HPText
       value: 
       objectReference: {fileID: 1565124188}
+    - target: {fileID: 1683409109773244230, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 38757212}
     - target: {fileID: 1683409109773244231, guid: 26186d248e6528b45b6c5cf797e1b773, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -7488,6 +7505,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 8957875087200068628, guid: 008eef669bd43754481d21cc4ca65f3c, type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 38757212}
     - target: {fileID: 8957875087200068628, guid: 008eef669bd43754481d21cc4ca65f3c, type: 3}
       propertyPath: sliceEffect
       value: 

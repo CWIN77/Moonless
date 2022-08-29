@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
   [SerializeField] private LayerMask jumpableGround;
   [SerializeField] private Text HPText;
+  [SerializeField] private Camera mainCamera;
 
   private Animator anim;
   private Rigidbody2D rb;
@@ -156,6 +157,7 @@ public class Player : MonoBehaviour
     if (coll.gameObject.CompareTag("EnemyAttackBox") && HP > 0)
     {
       TakeDamage(5);
+      StartCoroutine(mainCamera.GetComponent<CameraManager>().Shake(0.4f, 7f, 0.3f));
     }
   }
 }
