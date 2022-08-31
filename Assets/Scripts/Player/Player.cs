@@ -46,37 +46,40 @@ public class Player : MonoBehaviour
   private void Update()
   {
     // ActiveBehaviour = Slide | Attack1 | Attack2 | TakeHit
-    dirX = Input.GetAxisRaw("Horizontal");
-    animNowTime += Time.deltaTime;
-    attackWaitTime += Time.deltaTime;
-    print(dirX);
-    
     StopActiveBehaviour();
+    PlayBehaviour();
+  }
 
+  private void PlayBehaviour()
+  {
     if (HP > 0)
     {
       Attack();
-
       if (IsPlayActiveBehavior())
       {
-        // -1 = Left, 1 = Right
-        if (dirX < 0f && direction != -1)
-        {
-          transform.position = new Vector3(transform.position.x - 0.2f, transform.position.y, 0);
-          direction = -1;
-        }
-        else if (dirX > 0f && direction != 1)
-        {
-          transform.position = new Vector3(transform.position.x + 0.2f, transform.position.y, 0);
-          direction = 1;
-        }
-
-        transform.localScale = new Vector3(direction * 1.9F, 1.9F, 1);
+        dirX = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
-
+        ChangeDirection();
         OnGroundBehaviour();
       }
     }
+  }
+
+  private void ChangeDirection()
+  {
+    // -1 = Left, 1 = Right
+    if (dirX < 0f && direction != -1)
+    {
+      transform.position = new Vector3(transform.position.x - 0.2f, transform.position.y, 0);
+      direction = -1;
+    }
+    else if (dirX > 0f && direction != 1)
+    {
+      transform.position = new Vector3(transform.position.x + 0.2f, transform.position.y, 0);
+      direction = 1;
+    }
+
+    transform.localScale = new Vector3(direction * 1.9F, 1.9F, 1);
   }
 
   private void OnGroundBehaviour()
@@ -105,6 +108,7 @@ public class Player : MonoBehaviour
   {
     if (stopLength > 0 && animNowTime <= stopLength)
     {
+      animNowTime += Time.deltaTime;
       rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
     }
     else if (rb.constraints.ToString() == "FreezePositionX, FreezeRotation")
@@ -127,6 +131,7 @@ public class Player : MonoBehaviour
 
   private void Attack()
   {
+    attackWaitTime += Time.deltaTime;
     if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown("m")) && attackWaitTime > 0.425f && !isSlide)
     {
       if (attack_cnt > 1 || attackWaitTime > 0.63f) { attack_cnt = 0; }
@@ -183,7 +188,7 @@ public class Player : MonoBehaviour
     if (coll.gameObject.CompareTag("EnemyAttackBox") && HP > 0)
     {
       TakeDamage(5);
-      StartCoroutine(mainCamera.GetComponent<CameraManager>().Shake(0.4f, 6f, 0.3f));
+      StartCoroutine(mainCamera.GetComponent<CameraManager>().Shake(0.4f, 7f, 0.3f));
     }
   }
 }

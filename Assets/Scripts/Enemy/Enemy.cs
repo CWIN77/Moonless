@@ -178,10 +178,10 @@ public class Enemy : MonoBehaviour
   {
     if (coll.gameObject.CompareTag("PlayerAttackBox") && HP > 0 && !isTakeDamage)
     {
-      TakeDamage(10);
+      TakeDamage(0);
       isTakeDamage = true;
 
-      StartCoroutine(mainCamera.GetComponent<CameraManager>().Shake(0.2f, 6.25f, 0.5f));
+      StartCoroutine(mainCamera.GetComponent<CameraManager>().Shake(0.2f, 7f, 0.3f));
 
       GameObject obj = MonoBehaviour.Instantiate(sliceEffect);
       obj.name = "SliceEffect";
