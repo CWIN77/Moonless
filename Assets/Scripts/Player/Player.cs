@@ -132,9 +132,9 @@ public class Player : MonoBehaviour
   private void Attack()
   {
     attackWaitTime += Time.deltaTime;
-    if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown("m")) && attackWaitTime > 0.425f && !isSlide)
+    if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown("m")) && attackWaitTime > 0.35f && !isSlide)
     {
-      if (attack_cnt > 1 || attackWaitTime > 0.63f) { attack_cnt = 0; }
+      if (attack_cnt > 1 || attackWaitTime > 0.55f) { attack_cnt = 0; }
       anim.SetTrigger("Attack" + (attack_cnt + 1));
       attack_cnt++;
       attackWaitTime = 0.0f;
