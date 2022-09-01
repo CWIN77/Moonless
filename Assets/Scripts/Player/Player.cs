@@ -45,23 +45,39 @@ public class Player : MonoBehaviour
   // Update is called once per frame
   private void Update()
   {
-    // ActiveBehaviour = Slide | Attack1 | Attack2 | TakeHit
-    StopActiveBehaviour();
-    PlayBehaviour();
-  }
-
-  private void PlayBehaviour()
-  {
     if (HP > 0)
     {
+      StopActiveBehaviour();
       Attack();
-      if (IsPlayActiveBehavior())
+      isSlide = anim.GetCurrentAnimatorStateInfo(0).IsName("Slide");
+      if (IsPlayActiveBehaviour())
       {
         dirX = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
         ChangeDirection();
-        OnGroundBehaviour();
+        PlayBehaviour();
       }
+    }
+  }
+
+  private bool IsPlayActiveBehaviour()
+  {
+    animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
+    animAttack2 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
+    animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
+
+    return !animAttack1 && !animAttack2 && !animTakeHit;
+  }
+
+  private void Attack()
+  {
+    attackWaitTime += Time.deltaTime;
+    if (Input.GetMouseButtonDown(0) && attackWaitTime > 0.37f && !isSlide)
+    {
+      if (attack_cnt > 1 || attackWaitTime > 0.58f) { attack_cnt = 0; }
+      anim.SetTrigger("Attack" + (attack_cnt + 1));
+      attack_cnt++;
+      attackWaitTime = 0.0f;
+      stopLength = GetAnimLength("Attack" + attack_cnt);
     }
   }
 
@@ -78,37 +94,38 @@ public class Player : MonoBehaviour
       transform.position = new Vector3(transform.position.x + 0.2f, transform.position.y, 0);
       direction = 1;
     }
-
-    transform.localScale = new Vector3(direction * 1.9F, 1.9F, 1);
   }
 
-  private void OnGroundBehaviour()
+  private void PlayBehaviour()
   {
-    if (IsGrounded())
+    transform.localScale = new Vector3(direction * 1.9F, 1.9F, 1);
+
+    if (!isSlide)
     {
-      if (Input.GetKeyDown("space")) { rb.velocity = new Vector2(rb.velocity.x, jumpForce); }
-
-      if (dirX != 0f) { state = MovementState.run; } // Run
-      else if (rb.velocity.y > .1f) { state = MovementState.jump; } // Jump   
-      else if (rb.velocity.y < -.1f) { state = MovementState.fall; } // Fall
-      else { state = MovementState.idle; } // Idle
-
-      if (Input.GetKeyDown(KeyCode.LeftShift)) // Slide
-      {
-        if (dirX == 0) { rb.velocity = new Vector2(direction * moveSpeed * 1.25f, rb.velocity.y); }
-        else { rb.velocity = new Vector2(direction * moveSpeed * 1.8f, rb.velocity.y); }
-        state = MovementState.slide;
-      }
-
-      anim.SetInteger("State", (int)state);
+      rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
+      if (Input.GetKeyDown("space") && IsGrounded()) { rb.velocity = new Vector2(rb.velocity.x, jumpForce); }
     }
+
+    if (dirX != 0f && IsGrounded()) { state = MovementState.run; } // Run
+    else if (rb.velocity.y > .1f) { state = MovementState.jump; } // Jump   
+    else if (rb.velocity.y < -.1f) { state = MovementState.fall; } // Fall
+    else { state = MovementState.idle; } // Idle
+
+    if (Input.GetKeyDown(KeyCode.LeftShift) && IsGrounded()) // Slide
+    {
+      if (dirX == 0) { rb.velocity = new Vector2(direction * moveSpeed * 1.2f, rb.velocity.y); }
+      else { rb.velocity = new Vector2(direction * moveSpeed * 1.7f, rb.velocity.y); }
+      state = MovementState.slide;
+    }
+
+    anim.SetInteger("State", (int)state);
   }
 
   private void StopActiveBehaviour()
   {
+    animNowTime += Time.deltaTime;
     if (stopLength > 0 && animNowTime <= stopLength)
     {
-      animNowTime += Time.deltaTime;
       rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
     }
     else if (rb.constraints.ToString() == "FreezePositionX, FreezeRotation")
@@ -116,29 +133,6 @@ public class Player : MonoBehaviour
       rb.constraints &= ~RigidbodyConstraints2D.FreezeAll;
       rb.constraints = RigidbodyConstraints2D.FreezeRotation;
       stopLength = 0;
-    }
-  }
-
-  private bool IsPlayActiveBehavior()
-  {
-    isSlide = anim.GetCurrentAnimatorStateInfo(0).IsName("Slide");
-    animAttack1 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
-    animAttack2 = anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
-    animTakeHit = anim.GetCurrentAnimatorStateInfo(0).IsName("TakeHit");
-
-    return (!isSlide && !animAttack1 && !animAttack2 && !animTakeHit);
-  }
-
-  private void Attack()
-  {
-    attackWaitTime += Time.deltaTime;
-    if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown("m")) && attackWaitTime > 0.35f && !isSlide)
-    {
-      if (attack_cnt > 1 || attackWaitTime > 0.55f) { attack_cnt = 0; }
-      anim.SetTrigger("Attack" + (attack_cnt + 1));
-      attack_cnt++;
-      attackWaitTime = 0.0f;
-      stopLength = GetAnimLength("Attack" + attack_cnt);
     }
   }
 

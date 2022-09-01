@@ -40,6 +40,10 @@
      <Compile Include="Assets\Scripts\Player\Player.cs" />
      <Compile Include="Assets\Scripts\Enemy\Enemy.cs" />
      <Compile Include="Assets\Scripts\CameraManager.cs" />
+     <Compile Include="Assets\Prototype Hero Demo - Pixel Art\Demo\Sensor_Prototype.cs" />
+     <Compile Include="Assets\Prototype Hero Demo - Pixel Art\Demo\AudioManager_PrototypeHero.cs" />
+     <Compile Include="Assets\Prototype Hero Demo - Pixel Art\Demo\Dust_DestroyEvent.cs" />
+     <Compile Include="Assets\Prototype Hero Demo - Pixel Art\Demo\PrototypeHeroDemo.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.7f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
