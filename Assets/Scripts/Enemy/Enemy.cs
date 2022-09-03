@@ -181,7 +181,7 @@ public class Enemy : MonoBehaviour
       TakeDamage(0);
       isTakeDamage = true;
 
-      StartCoroutine(mainCamera.GetComponent<CameraManager>().Shake(0.2f, 7f, 0.3f));
+      StartCoroutine(mainCamera.GetComponent<CameraManager>().Shake(0.2f, 6f, 0.4f));
 
       GameObject obj = MonoBehaviour.Instantiate(sliceEffect);
       obj.name = "SliceEffect";
